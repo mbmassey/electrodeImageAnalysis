@@ -1,12 +1,12 @@
 import cv2
-import pandas as pd
 import os
-import numpy as np
-import math
 import re
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+plt.style.use('evanstyle.mplstyle')
 
 df = pd.DataFrame()
-
 
 def insert_row(radius):
     global df
@@ -22,7 +22,7 @@ def draw_circle(event, x, y, flags, param):
         x1, y1, = x, y
         print("Button down")
     elif event == cv2.EVENT_LBUTTONUP:
-        radius = math.hypot(x - x1, y - y1)
+        radius = np.hypot(x - x1, y - y1)
         cv2.circle(img, (x1,y1), int(radius), (255, 0, 255), 10)
         cv2.imshow(windowName, img)
         insert_row(radius)
@@ -77,3 +77,10 @@ if __name__ == "__main__":
             cv2.destroyAllWindows()
             break
 
+    hist = df.hist(column='area', bins=20, figsize = (12,8))
+    for ax in hist.flatten():
+        ax.set_xlabel("Area of glitch (pixels^2)")
+        ax.set_ylabel("Number of glitches")
+        ax.set_title("Area of distinct glitches")
+    print("Histogram!")
+    plt.show()
