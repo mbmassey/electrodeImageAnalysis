@@ -7,4 +7,9 @@ I analyze the electrode images in two steps:
 2. Next, find the area of the gold surface left unscathed by glitches with inRange and findContour.<br>   
 *ElectrodeDemo* shows an example of this analysis on a single image. *ElectrodeAnalysis* is the data pipeline from an image folder to a dataframe containing all coordinates and areas.<br>
 This uses pandas and regex. The number of photos and the variety of coordinates
-are unknown, but the image filenames follow 'yX\_xX.JPG' (e.g. 'y18\_x48.JPG')
+are unknown, but the image filenames follow 'yX\_xX.JPG' (e.g.
+'y18\_x48.JPG').<br>
+*selectGlitches* allows a user to label distinct glitches, which are aggregated
+into a histogram. We are interested in how the magnitude of the glitch is
+related to the area of the molten steel.<br>
+See selectGlitchesHistogram for results.
