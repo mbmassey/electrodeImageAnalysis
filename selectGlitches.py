@@ -5,17 +5,19 @@ import numpy as np
 import math
 import re
 
+df = pd.DataFrame()
 
-def insert_row(df):
+
+def insert_row(radius):
+    global df
     ds = pd.Series(dtype = 'float64')
     ds['x'] = int(x_coor)
     ds['y'] = int(y_coor)
     ds['area'] = np.pi*radius**2
     df = df.append(ds, ignore_index=True)
-    return df
 
 def draw_circle(event, x, y, flags, param):
-    global x1, y1, radius, img, df
+    global img, x1, y1
     if event == cv2.EVENT_LBUTTONDOWN:
         x1, y1, = x, y
         print("Button down")
@@ -23,12 +25,11 @@ def draw_circle(event, x, y, flags, param):
         radius = math.hypot(x - x1, y - y1)
         cv2.circle(img, (x1,y1), int(radius), (255, 0, 255), 10)
         cv2.imshow(windowName, img)
-        circle_drawn
+        insert_row(radius)
         print("Button up")
 
-def analyze_electrode(file_path, df, escpress, x_coor, y_coor): 
-    global img, windowName, circle_drawn
-    circle_drawn = False
+def analyze_electrode(file_path, escpress): 
+    global df, img, windowName
     rkey = ord('r')
     nextkey = ord('n')
     esckey = 27
@@ -42,36 +43,34 @@ def analyze_electrode(file_path, df, escpress, x_coor, y_coor):
     
     while (True):
         key = cv2.waitKey(20) & 0xFF
-        if circle_drawn == True:
-            df = insert_row(df)
-
-        elif key == esckey:
+        if key == esckey:
             escpress = True
             break
         elif key == rkey:
             img = original.copy()
             #delete entries with x,y
-            df = df.drop(df[(df["x"] == x_coor) & (df["y"] == y_coor)].index)
+            print(df)
+            df = df.drop(df[(df["x"] == int(x_coor)) & (df["y"] == int(y_coor))].index)
             print("restarting")
+            print(df)
             cv2.imshow(windowName, img)
 
         elif key == nextkey:
             break
-
-    return df, escpress
+    return escpress
 
 if __name__ == "__main__":
+    global x_coor, y_coor
     indir = 'Gold Set 2/'
     regex = re.compile(r'^y(\d+)_x(\d+)\.JPG$')
     filenames = os.listdir(indir)
     file_list = [f for f in map(regex.match, filenames) if f is not None]
-    df = pd.DataFrame()
     escpress = False
 
     for f in file_list:
         curr_file = indir + f.group(0)
         x_coor, y_coor = f.group(2), f.group(1)
-        df, escpress = analyze_electrode(curr_file, df, escpress, x_coor, y_coor)
+        escpress = analyze_electrode(curr_file, escpress)
         print(df.head(10))
         
         if escpress == True:
