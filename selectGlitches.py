@@ -77,8 +77,9 @@ if __name__ == "__main__":
             cv2.destroyAllWindows()
             break
 
-    hist = df.hist(column='area', bins=20, figsize = (12,8))
+    hist = df.hist(column='area', bins=100, figsize = (12,8))
     for ax in hist.flatten():
+        ax.grid(False)
         ax.set_xlabel("Area of glitch (pixels^2)")
         ax.set_ylabel("Number of glitches")
         ax.set_title("Area of distinct glitches")
