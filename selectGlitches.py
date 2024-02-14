@@ -85,3 +85,5 @@ if __name__ == "__main__":
         ax.set_title("Area of distinct glitches")
     print("Histogram!")
     plt.show()
+
+    df.to_pickle("glitches_df.p")
